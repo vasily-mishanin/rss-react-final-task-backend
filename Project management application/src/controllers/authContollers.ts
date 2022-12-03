@@ -5,10 +5,9 @@ import { checkPassword, hashPassword } from '../services/hash.service';
 import { signToken } from '../services/token.service';
 
 export const signIn = async (req: Request, res: Response) => {
-
-  const bodyError = checkBody(req.body, ['login', 'password'])
+  const bodyError = checkBody(req.body, ['login', 'password']);
   if (bodyError) {
-    return res.status(400).send(createError(400, "bad request: " + bodyError));
+    return res.status(400).send(createError(400, 'bad request: ' + bodyError));
   }
 
   const { login, password } = req.body;
@@ -17,20 +16,17 @@ export const signIn = async (req: Request, res: Response) => {
   if (foundedUser) {
     const isCorrectPassword = await checkPassword(password, foundedUser.password);
     if (isCorrectPassword) {
-      return res.send({ token: signToken(foundedUser._id, login) })
+      return res.send({ token: signToken(foundedUser._id, login), _id: foundedUser._id });
     }
   }
 
   return res.status(401).send(createError(401, 'Authorization error'));
-
 };
 
-
 export const signUp = async (req: Request, res: Response) => {
-
-  const bodyError = checkBody(req.body, ['name', 'login', 'password'])
+  const bodyError = checkBody(req.body, ['name', 'login', 'password']);
   if (bodyError) {
-    return res.status(400).send(createError(400, "bad request: " + bodyError));
+    return res.status(400).send(createError(400, 'bad request: ' + bodyError));
   }
   const { login, name, password } = req.body;
 
@@ -43,8 +39,9 @@ export const signUp = async (req: Request, res: Response) => {
   try {
     const newUser = await userService.createUser({ login, name, password: hashedPassword });
     res.json(newUser);
+  } catch (err) {
+    return console.log(err);
   }
-  catch (err) { return console.log(err); }
 };
 
 export const chek = async (req: Request, res: Response) => {
